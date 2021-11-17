@@ -12,14 +12,13 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    private String query;
 
     public UserDaoJDBCImpl () {
 
     }
 
     public void createUsersTable () {
-        query = "CREATE TABLE IF NOT EXISTS user(id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50),lastName VARCHAR(50), age TINYINT)";
+        String query = "CREATE TABLE IF NOT EXISTS user(id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50),lastName VARCHAR(50), age TINYINT)";
         Util util = new Util();
         try (Statement statement = util.getConnection().createStatement()) {
             statement.executeQuery(query);
@@ -31,7 +30,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable () {
-        query = "DROP TABLE IF EXISTS user";
+        String query = "DROP TABLE IF EXISTS user";
         Util util = new Util();
         try (Statement statement = util.getConnection().createStatement()) {
             statement.executeQuery(query);
@@ -42,8 +41,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void saveUser (String name, String lastName, byte age) {
         createUsersTable ();
-        Util util = new Util();
-        try (PreparedStatement st = util.getConnection().prepareStatement("INSERT INTO  user (name, lastName, age) VALUES (?, ?, ?)")) {
+        try (PreparedStatement st = new Util().getConnection().prepareStatement("INSERT INTO  user (name, lastName, age) VALUES (?, ?, ?)")) {
             st.setString(1, name);
             st.setString(2, lastName);
             st.setByte(3, age);
@@ -68,7 +66,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers () {
         createUsersTable ();
-        query = "SELECT * FROM user";
+        String query = "SELECT * FROM user";
         List<User> list = new ArrayList<>();
         Util util = new Util();
         try (Statement statement = util.getConnection().createStatement()) {
@@ -84,7 +82,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void cleanUsersTable () {
         createUsersTable ();
-        query = "TRUNCATE TABLE user";
+        String query = "TRUNCATE TABLE user";
         Util util = new Util();
         try (Statement statement = util.getConnection().createStatement()) {
             statement.executeQuery(query);
