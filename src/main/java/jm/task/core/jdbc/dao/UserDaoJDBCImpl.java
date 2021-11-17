@@ -23,8 +23,10 @@ public class UserDaoJDBCImpl implements UserDao {
         Util util = new Util();
         try (Statement statement = util.getConnection().createStatement()) {
             statement.executeQuery(query);
+            System.out.println("Таблица создана.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Что то пошло не так с созданием таблицы "+e);
+
         }
     }
 
@@ -39,21 +41,25 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser (String name, String lastName, byte age) {
+        createUsersTable ();
         Util util = new Util();
-        try (PreparedStatement st = util.getConnection().prepareStatement("INSERT INTO user (name, lastName, age) VALUES (?, ?, ?)")) {
-            st.setString(1,name);
+        try (PreparedStatement st = util.getConnection().prepareStatement("INSERT INTO  user (name, lastName, age) VALUES (?, ?, ?)")) {
+            st.setString(1, name);
             st.setString(2, lastName);
-            st.setByte(3,age);
+            st.setByte(3, age);
             st.execute();
+            System.out.println("User с именем – " + name + " добавлен в базу данных");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void removeUserById (long id) {
+
         Util util = new Util();
-        try (PreparedStatement st = util.getConnection().prepareStatement("DELETE FROM user WHERE id = ?") ){
-            st.setLong(1,id);
+        createUsersTable ();
+        try (PreparedStatement st = util.getConnection().prepareStatement("DELETE FROM user WHERE id = ?")) {
+            st.setLong(1, id);
             st.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,13 +67,14 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public List<User> getAllUsers () {
+        createUsersTable ();
         query = "SELECT * FROM user";
         List<User> list = new ArrayList<>();
         Util util = new Util();
         try (Statement statement = util.getConnection().createStatement()) {
             ResultSet rs = statement.executeQuery(query);
-            while (rs.next()){
-                list.add(new User(rs.getLong("id"), rs.getString("name"), rs.getString("lastName"),rs.getByte("age")));
+            while (rs.next()) {
+                list.add(new User(rs.getLong("id"), rs.getString("name"), rs.getString("lastName"), rs.getByte("age")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -76,6 +83,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable () {
+        createUsersTable ();
         query = "TRUNCATE TABLE user";
         Util util = new Util();
         try (Statement statement = util.getConnection().createStatement()) {
