@@ -27,6 +27,14 @@ public class Util {
             System.err.println("Ошибка соединения : " + ex);
         }
 
+
+    }
+
+    public Connection getConnection () {
+        return connection;
+    }
+
+    public static SessionFactory getSessionFactory () {
         if (sessionFactory == null) {
             try {
                 Properties prop = new Properties();
@@ -37,7 +45,7 @@ public class Util {
                 prop.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
                 prop.put(Environment.SHOW_SQL, "true");
                 prop.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-                prop.put(Environment.HBM2DDL_AUTO, "create-drop");
+                prop.put(Environment.HBM2DDL_AUTO, "update");
                 sessionFactory = new Configuration()
                         .addProperties(prop)
                         .addAnnotatedClass(User.class)
@@ -47,13 +55,6 @@ public class Util {
             }
         }
 
-    }
-
-    public Connection getConnection () {
-        return connection;
-    }
-
-    public static SessionFactory getSessionFactory () {
         return sessionFactory;
     }
 

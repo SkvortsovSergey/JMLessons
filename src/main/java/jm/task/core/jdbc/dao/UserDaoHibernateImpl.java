@@ -5,6 +5,7 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -13,7 +14,6 @@ public class UserDaoHibernateImpl implements UserDao {
     SessionFactory sessionFactory = Util.getSessionFactory();
 
     public UserDaoHibernateImpl () {
-
     }
 
     @Override
@@ -60,14 +60,13 @@ public class UserDaoHibernateImpl implements UserDao {
     public void removeUserById (long id) {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.delete(session.byId("id"));
+            session.delete(session.get(User.class, id));
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
         }
-
     }
 
     @Override
@@ -75,16 +74,14 @@ public class UserDaoHibernateImpl implements UserDao {
         List<User> users = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-           users =session.createQuery("FROM User ").list();
+            users = session.createQuery("FROM User ").list();
             transaction.commit();
-            return users;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
         }
         return users;
-
     }
 
     @Override
